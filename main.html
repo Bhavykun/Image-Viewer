@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Viewer</title>
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #EAFAEA;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    /* File Upload Input */
+    input[type="file"] {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 1rem;
+      color: #fff;
+      background: #780C28;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    input[type="file"]:hover {
+      background: zzzz#780C28;
+      transform: scale(1.05);
+    }
+
+    /* Image Viewer Grid */
+    .image-viewer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      margin-top: 20px;
+    }
+
+    .image-viewer img {
+      width: 100%;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .image-viewer img:hover {
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Modal Styling */
+    #modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      display: none;
+      z-index: 1000;
+    }
+
+    #modal img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    #modal .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #fff;
+      font-size: 30px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    #modal .close-btn:hover {
+      transform: scale(1.2);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .image-viewer {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+
+      input[type="file"] {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Image Viewer</h1>
+  <input type="file" id="uploadImage" accept="image/*,.bmp" multiple>
+  <div class="image-viewer" id="imageViewer"></div>
+  <div id="modal">
+    <span class="close-btn" id="closeModal">&times;</span>
+    <img id="modalImage" src="" alt="Large view">
+  </div>
+
+  <script>
+    const uploadImage = document.getElementById('uploadImage');
+    const imageViewer = document.getElementById('imageViewer');
+    const modal = document.getElementById('modal');
+    const modalImage = document.getElementById('modalImage');
+    const closeModal = document.getElementById('closeModal');
+
+    // Event listener for image upload
+    uploadImage.addEventListener('change', (event) => {
+      const files = event.target.files; // Get uploaded files
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith("image/") || file.name.endsWith(".bmp")) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            // Create image element
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = file.name;
+            img.addEventListener('click', () => {
+              // Open modal and display clicked image
+              modal.style.display = 'flex';
+              modalImage.src = e.target.result;
+            });
+            imageViewer.appendChild(img); // Add image to viewer
+          };
+          reader.readAsDataURL(file); // Read file as DataURL
+        } else {
+          alert(`${file.name} is not a valid image.`);
+        }
+      });
+    });
+
+    // Event listener to close the modal
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    // Close modal if user clicks outside the image
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
